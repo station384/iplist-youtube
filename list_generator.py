@@ -59,8 +59,9 @@ def read_ips(ipv4List: list[IPv4Address], ipv6List: list[IPv6Address]):
     for ip in f.readlines():
       ip = ip.strip()
       try:
-        ip = ip_address( ip )
-        ipv6List.append( ip )
+       if ip != '::' or ip.startswith("fc00") or ip.startswith("fd00"):
+         ip = ip_address( ip )
+         ipv6List.append( ip )
       except ValueError:
         if ip != '':
           print('%s is not a valid IPv6 address!' % ip)
