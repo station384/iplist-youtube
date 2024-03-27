@@ -75,9 +75,32 @@ def download_youtubeparsed():
   url = 'https://raw.githubusercontent.com/nickspaargaren/no-google/master/categories/youtubeparsed'
   download(url, 'youtubeparsed')
 
+def download_generalParsed():
+  url = 'https://raw.githubusercontent.com/nickspaargaren/no-google/master/categories/generalparsed'
+  download(url, 'generalparsed')
+
+def download_dnsParsed():
+  url = 'https://raw.githubusercontent.com/nickspaargaren/no-google/master/categories/dnsparsed'
+  download(url, 'dnsparsed')
+
+def download_dnsAna():
+  url = 'https://raw.githubusercontent.com/nickspaargaren/no-google/master/categories/analyticsparsed'
+  download(url, 'anaparsed')
+
+
+
 def get_coroutines(ipv4List: list[IPv4Address], ipv6List: list[IPv6Address], ip_fetcher):
   # make a list of threads
   coroutines = []
+
+  # handle googlevideo.com they sneek this in
+  coroutines.append(ip_fetcher("googlevideo.com", 'A', ipv4List))
+  coroutines.append(ip_fetcher("googlevideo.com", 'AAAA', ipv6List))
+  coroutines.append(ip_fetcher("apis.google.com", 'A', ipv4List))
+  coroutines.append(ip_fetcher("apis.google.com", 'AAAA', ipv6List))
+  coroutines.append(ip_fetcher("googleusercontent.com", 'A', ipv4List))
+  coroutines.append(ip_fetcher("googleusercontent.com", 'AAAA', ipv6List))
+
 
   # open the youtubeparsed file
   with open('youtubeparsed', mode = 'r', encoding = 'utf-8') as f:
@@ -99,6 +122,36 @@ def get_coroutines(ipv4List: list[IPv4Address], ipv6List: list[IPv6Address], ip_
       # make a thread for each fetch_ip call
       coroutines.append(ip_fetcher(url, 'A', ipv4List))
       coroutines.append(ip_fetcher(url, 'AAAA', ipv6List))
+
+#  with open('generalparsed', mode = 'r', encoding = 'utf-8') as f:
+#    for url in f.readlines():
+#      url = url.strip()
+#      if url == '':
+#        continue
+#      if url.startswith('#'):
+#        continue
+#      coroutines.append(ip_fetcher(url, 'A', ipv4List))
+#      coroutines.append(ip_fetcher(url, 'AAAA', ipv6List))
+
+#  with open('dnsparsed', mode = 'r', encoding = 'utf-8') as f:
+#    for url in f.readlines():
+#      url = url.strip()
+#      if url == '':
+#        continue
+#      if url.startswith('#'):
+#        continue
+#      coroutines.append(ip_fetcher(url, 'A', ipv4List))
+#      coroutines.append(ip_fetcher(url, 'AAAA', ipv6List))
+
+#  with open('anaparsed', mode = 'r', encoding = 'utf-8') as f:
+#    for url in f.readlines():
+#      url = url.strip()
+#      if url == '':
+#        continue
+#      if url.startswith('#'):
+#        continue
+#      coroutines.append(ip_fetcher(url, 'A', ipv4List))
+#      coroutines.append(ip_fetcher(url, 'AAAA', ipv6List))
 
   return coroutines
 
@@ -133,6 +186,9 @@ async def main():
 
   # download youtubeparsed
   download_youtubeparsed()
+#  download_generalParsed()
+#  download_dnsParsed()
+#  download_dnsAna()
 
   # get ip fetcher
   ip_fetcher = get_ip_fetcher()
